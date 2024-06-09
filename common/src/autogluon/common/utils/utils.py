@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 
 from ..version import __version__
-
+from .s3_utils import is_s3_url
 try:
     from ..version import __lite__
 except ImportError:
@@ -31,6 +31,8 @@ def setup_outputdir(path, warn_if_exist=True, create_dir=True, path_suffix=None)
         path_suffix = path_suffix[:-1]
     if path is not None:
         path = f"{path}{path_suffix}"
+    if is_s3_url(path):
+        return path
     if path is None:
         utcnow = datetime.utcnow()
         timestamp = utcnow.strftime("%Y%m%d_%H%M%S")
@@ -57,7 +59,7 @@ def setup_outputdir(path, warn_if_exist=True, create_dir=True, path_suffix=None)
                 raise FileExistsError
         except FileExistsError:
             logger.warning(f'Warning: path already exists! This predictor may overwrite an existing predictor! path="{path}"')
-    path = os.path.expanduser(path)  # replace ~ with absolute path if it exists
+    path = Path(path).resolve()
     return path
 
 

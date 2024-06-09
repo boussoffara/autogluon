@@ -23,6 +23,7 @@ from autogluon.common.utils.pandas_utils import get_approximate_df_mem_usage
 from autogluon.common.utils.resource_utils import ResourceManager, get_resource_manager
 from autogluon.common.utils.try_import import try_import_ray
 from autogluon.common.utils.utils import setup_outputdir
+from autogluon.common.utils.s3_utils import is_s3_url
 
 from ... import metrics
 from ...calibrate.temperature_scaling import apply_temperature_scaling
@@ -1498,7 +1499,8 @@ class AbstractModel:
             return skip_hpo(self, X=X, y=y, X_val=X_val, y_val=y_val, **kwargs)
 
         directory = self.path
-        os.makedirs(directory, exist_ok=True)
+        if not is_s3_url(directory):
+            os.makedirs(directory, exist_ok=True)
         data_path = directory
         if DistributedContext.is_distributed_mode():
             data_path = DistributedContext.get_util_path()

@@ -259,7 +259,6 @@ def run(
     trainable_args = ray_tune_adapter.trainable_args_update_method(trainable_args)
 
     original_path = os.getcwd()
-    save_dir = os.path.normpath(save_dir)
     if tune_config_kwargs is None:
         tune_config_kwargs = dict()
     if run_config_kwargs is None:
